@@ -31,13 +31,28 @@ LEFT JOIN Order_ O
     AND O.OrderDate >= CURDATE() - INTERVAL 30 DAY
 WHERE O.OrderID IS NULL;
 
--- Show users that have not been made a purchase within the last 30 days
+-- Show users that have not been made a purchase within the last 14 days
+WITH InactiveCustomer AS (
+    SELECT
+        C.CustomerID,
+        CONCAT(C.FirstName, ' ', C.LastName) AS Name
+    FROM Customer C
+    LEFT JOIN Order_ O
+        ON C.CustomerID = O.CustomerID
+        AND O.OrderDate >= CURDATE() - INTERVAL 14 DAY
+        AND O.OrderDate <= CURDATE()
+    WHERE O.OrderID IS NULL
+)
+SELECT *
+FROM InactiveCustomer;
+
 WITH InactiveCustomer AS (
 SELECT C.CustomerID, CONCAT(C.FirstName, ' ', C.LastName) AS Name
 FROM Customer C
 LEFT JOIN Order_ O
     ON C.CustomerID = O.CustomerID
-    AND O.OrderDate >= CURDATE() - INTERVAL 30 DAY
+    AND O.OrderDate >= CURDATE() - INTERVAL 14 DAY
+    AND O.OrderDate <= CURDATE()
 WHERE O.OrderID IS NULL)
 
 -- Show what inactive customers typically purchase
@@ -46,7 +61,7 @@ SELECT
     G.Name,
     SUM(O.Quantity) AS TotalPurchased
 FROM Order_ O
-JOIN InactiveCustomers IC
+JOIN InactiveCustomer IC
     ON O.CustomerID = IC.CustomerID
 JOIN Game G
     ON O.GameID = G.GameID
@@ -70,3 +85,5 @@ LEFT JOIN Merch M
     ON O.GameID = M.GameID
 GROUP BY GameType
 ORDER BY TotalSold DESC;
+
+SELECT * FROM INACTIVECUSTOMER;

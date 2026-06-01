@@ -130,7 +130,6 @@ CREATE TABLE Customer (
 );
 
 
-
 CREATE TABLE Order_ (
 	CustomerID INT NOT NULL,
 	GameID SMALLINT NOT NULL,
